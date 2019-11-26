@@ -5,7 +5,6 @@ CMD_DIR := $(CUR_DIR)/cmd
 BIN_DIR := $(CUR_DIR)/bin
 
 growser:
-	@echo $(CUR_DIR)
 	@go build -o $(BIN_DIR)/$(PROGRAM) $(CMD_DIR)/$(PROGRAM)/main.go
 
 .PHONY: growser
