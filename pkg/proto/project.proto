@@ -1,0 +1,10 @@
+syntax = "proto3";
+package proto;
+
+message Hub { map<string, Project> projects = 1; }
+
+message Project {
+    required name string = 1;
+    required path string = 2;
+    description string = 3;
+}
