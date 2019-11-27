@@ -27,6 +27,7 @@ type Mapper interface {
 	Add(string, string) error
 	Update(string, string) error
 	Remove(string) error
+	Clean() error
 	Info(string) (string, error)
 }
 

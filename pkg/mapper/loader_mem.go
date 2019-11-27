@@ -60,6 +60,15 @@ func (l *memLoader) Remove(k string) error {
 	return nil
 }
 
+func (l *memLoader) Clean() error {
+	if err := must(l); err != nil {
+		return err
+	}
+
+	l.projectMap = make(map[string]string, 0)
+	return nil
+}
+
 func (l *memLoader) Info(k string) (string, error) {
 	if err := must(l); err != nil {
 		return "", err

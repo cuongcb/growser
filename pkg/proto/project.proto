@@ -4,7 +4,7 @@ package proto;
 message Hub { map<string, Project> projects = 1; }
 
 message Project {
-    required name string = 1;
-    required path string = 2;
-    description string = 3;
+    string name = 1;
+    string path = 2;
+    string description = 3;
 }

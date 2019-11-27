@@ -8,11 +8,8 @@ import (
 
 	"github.com/cuongcb/growser/pkg/mapper"
 	"github.com/cuongcb/growser/pkg/presenter"
+	"github.com/cuongcb/growser/pkg/proto"
 )
-
-type project struct {
-	name, path string
-}
 
 func initLoader() (mapper.Mapper, error) {
 	cfg := &mapper.Config{Type: mapper.InMem}
@@ -39,6 +36,7 @@ func main() {
 	showHelp()
 
 	for {
+		fmt.Print("Action > ")
 		r := bufio.NewReader(os.Stdin)
 		c, err := r.ReadString('\n')
 		if err != nil {
@@ -60,53 +58,77 @@ func main() {
 				fmt.Println(err)
 				continue
 			}
-			fmt.Println("project added")
+			fmt.Println("added new project")
+		case "u":
+			p, err := inputProject(r)
+			if err != nil {
+				panic(err)
+			}
+			err = updateProject(m, p)
+			if err != nil {
+				fmt.Println(err)
+				continue
+			}
+			fmt.Println("updated project")
 		case "r":
+			fmt.Printf("> (name) ")
 			name, err := r.ReadString('\n')
 			if err != nil {
 				panic(err)
 			}
+
+			name = strings.TrimSuffix(name, "\n")
 
 			err = removeProject(m, name)
 			if err != nil {
 				fmt.Println(err)
 				continue
 			}
-			fmt.Println("project removed")
+			fmt.Println("removed project")
+		case "c":
+			err := cleanProject(m)
+			if err != nil {
+				fmt.Println(err)
+				continue
+			}
+			fmt.Println("removed all projects")
 		case "h":
 			showHelp()
 		case "q":
 			fmt.Println("growser stopped...")
 			return
+		default:
+			fmt.Printf("Unsupported action: '%s'\n", c)
+			fmt.Println("'h' for help")
 		}
 	}
 }
 
-func inputProject(r *bufio.Reader) (project, error) {
-	fmt.Printf("> ")
+func inputProject(r *bufio.Reader) (*proto.Project, error) {
+	fmt.Printf("> (name) ")
 	name, err := r.ReadString('\n')
 	if err != nil {
-		return project{}, err
+		return nil, err
 	}
 
 	name = strings.TrimSuffix(name, "\n")
 
-	fmt.Printf("> ")
+	fmt.Printf("> (path) ")
 	path, err := r.ReadString('\n')
 	if err != nil {
-		return project{}, err
+		return nil, err
 	}
 
 	path = strings.TrimSuffix(path, "\n")
 
-	return project{
-		name: name,
-		path: path,
+	return &proto.Project{
+		Name: name,
+		Path: path,
 	}, nil
 }
 
-func addProject(m mapper.Mapper, p project) error {
-	return m.Add(p.name, p.path)
+func addProject(m mapper.Mapper, p *proto.Project) error {
+	return m.Add(p.Name, p.Path)
 }
 
 func listProject(m mapper.Mapper, p presenter.Presenter) {
@@ -118,11 +140,21 @@ func removeProject(m mapper.Mapper, name string) error {
 	return m.Remove(name)
 }
 
+func updateProject(m mapper.Mapper, p *proto.Project) error {
+	return m.Update(p.Name, p.Path)
+}
+
+func cleanProject(m mapper.Mapper) error {
+	return m.Clean()
+}
+
 func showHelp() {
 	fmt.Println("growser: l, r, a, h, q")
 	fmt.Println("- l: list all projects")
 	fmt.Println("- a: add a project")
+	fmt.Println("- u: update an existing project")
 	fmt.Println("- r: remove a project")
+	fmt.Println("- c: remove all projects")
 	fmt.Println("- h: show help")
 	fmt.Println("- q: quit")
 }
