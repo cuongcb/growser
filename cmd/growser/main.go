@@ -6,18 +6,18 @@ import (
 	"os"
 	"strings"
 
-	"github.com/cuongcb/growser/pkg/mapper"
-	"github.com/cuongcb/growser/pkg/presenter"
 	"github.com/cuongcb/growser/pkg/proto"
+	"github.com/cuongcb/growser/pkg/storage"
+	"github.com/cuongcb/growser/pkg/view"
 )
 
-func initLoader() (mapper.Mapper, error) {
-	cfg := &mapper.Config{Type: mapper.File}
-	return mapper.New(cfg)
+func initLoader() (storage.Mapper, error) {
+	cfg := &storage.Config{Type: storage.File}
+	return storage.NewMapper(cfg)
 }
 
-func initPresenter() (presenter.Presenter, error) {
-	return presenter.New(), nil
+func initPresenter() (view.Presenter, error) {
+	return view.NewPresenter(), nil
 }
 
 func main() {
@@ -127,24 +127,24 @@ func inputProject(r *bufio.Reader) (*proto.Project, error) {
 	}, nil
 }
 
-func addProject(m mapper.Mapper, p *proto.Project) error {
+func addProject(m storage.Mapper, p *proto.Project) error {
 	return m.Add(p.Name, p.Path)
 }
 
-func listProject(m mapper.Mapper, p presenter.Presenter) {
+func listProject(m storage.Mapper, p view.Presenter) {
 	list, _ := m.List()
 	p.Present(list)
 }
 
-func removeProject(m mapper.Mapper, name string) error {
+func removeProject(m storage.Mapper, name string) error {
 	return m.Remove(name)
 }
 
-func updateProject(m mapper.Mapper, p *proto.Project) error {
+func updateProject(m storage.Mapper, p *proto.Project) error {
 	return m.Update(p.Name, p.Path)
 }
 
-func cleanProject(m mapper.Mapper) error {
+func cleanProject(m storage.Mapper) error {
 	return m.Clean()
 }
 
