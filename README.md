@@ -11,5 +11,5 @@ The primary feature of growser is to manage your project and ease to switch betw
 
 * Add new project to list.
 * Move to saved project directory.
-* List all projects.
+* List all registered projects.
 * Retrieve information of a saved project.

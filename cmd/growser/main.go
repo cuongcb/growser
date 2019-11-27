@@ -12,7 +12,7 @@ import (
 )
 
 func initLoader() (mapper.Mapper, error) {
-	cfg := &mapper.Config{Type: mapper.InMem}
+	cfg := &mapper.Config{Type: mapper.File}
 	return mapper.New(cfg)
 }
 
@@ -149,7 +149,7 @@ func cleanProject(m mapper.Mapper) error {
 }
 
 func showHelp() {
-	fmt.Println("growser: l, r, a, h, q")
+	fmt.Println("growser: l, r, a, u, c, h, q")
 	fmt.Println("- l: list all projects")
 	fmt.Println("- a: add a project")
 	fmt.Println("- u: update an existing project")

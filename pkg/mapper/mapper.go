@@ -40,14 +40,16 @@ type Config struct {
 func New(cfg *Config) (Mapper, error) {
 	switch cfg.Type {
 	case InMem:
-		return newMemLoader(), nil
+		return newMemMapper(), nil
+	case File:
+		return newFileMapper(), nil
 	default:
 		return nil, errNotSupported
 	}
 }
 
-func must(l Mapper) error {
-	if l == nil {
+func must(m Mapper) error {
+	if m == nil {
 		return errNotInitialized
 	}
 
