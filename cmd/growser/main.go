@@ -3,12 +3,17 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"os"
+	"os/exec"
+	"path"
 	"strings"
 
 	"github.com/cuongcb/growser/pkg/proto"
 	"github.com/cuongcb/growser/pkg/storage"
 	"github.com/cuongcb/growser/pkg/view"
+
+	"github.com/urfave/cli"
 )
 
 func initLoader() (storage.Mapper, error) {
@@ -23,6 +28,9 @@ func initPresenter() (view.Presenter, error) {
 func main() {
 	fmt.Println("growser starting...")
 
+	app := cli.NewApp()
+	app.Run(os.Args)
+
 	m, err := initLoader()
 	if err != nil {
 		panic(err)
@@ -33,74 +41,54 @@ func main() {
 		panic(err)
 	}
 
-	showHelp()
-
-	for {
-		fmt.Print("Action > ")
-		r := bufio.NewReader(os.Stdin)
-		c, err := r.ReadString('\n')
+	if os.Args[1] == "init" {
+		fullPath, err := os.Getwd()
 		if err != nil {
-			panic(err)
+			log.Fatal(err)
 		}
 
-		c = strings.TrimSuffix(c, "\n")
+		name := path.Base(fullPath)
 
-		switch c {
-		case "l":
-			listProject(m, p)
-		case "a":
-			p, err := inputProject(r)
-			if err != nil {
-				panic(err)
-			}
-			err = addProject(m, p)
-			if err != nil {
-				fmt.Println(err)
-				continue
-			}
-			fmt.Println("added new project")
-		case "u":
-			p, err := inputProject(r)
-			if err != nil {
-				panic(err)
-			}
-			err = updateProject(m, p)
-			if err != nil {
-				fmt.Println(err)
-				continue
-			}
-			fmt.Println("updated project")
-		case "r":
-			fmt.Printf("> (name) ")
-			name, err := r.ReadString('\n')
-			if err != nil {
-				panic(err)
-			}
-
-			name = strings.TrimSuffix(name, "\n")
-
-			err = removeProject(m, name)
-			if err != nil {
-				fmt.Println(err)
-				continue
-			}
-			fmt.Println("removed project")
-		case "c":
-			err := cleanProject(m)
-			if err != nil {
-				fmt.Println(err)
-				continue
-			}
-			fmt.Println("removed all projects")
-		case "h":
-			showHelp()
-		case "q":
-			fmt.Println("growser stopped...")
-			return
-		default:
-			fmt.Printf("Unsupported action: '%s'\n", c)
-			fmt.Println("'h' for help")
+		p := &proto.Project{
+			Name: name,
+			Path: fullPath,
 		}
+
+		if err := addProject(m, p); err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	if os.Args[1] == "go" {
+		name := os.Args[2]
+		list, err := m.List()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		if len(list) == 0 {
+			log.Fatalf("There is no project: %q", name)
+		}
+
+		dir := list[name]
+
+		cmd := exec.Command("gnome-terminal", "--tab")
+		cmd.Stdin = os.Stdin
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		cmd.Dir = dir
+		if err := cmd.Start(); err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	if os.Args[1] == "list" {
+		list, err := m.List()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		p.Present(list)
 	}
 }
 
@@ -146,15 +134,4 @@ func updateProject(m storage.Mapper, p *proto.Project) error {
 
 func cleanProject(m storage.Mapper) error {
 	return m.Clean()
-}
-
-func showHelp() {
-	fmt.Println("growser: l, r, a, u, c, h, q")
-	fmt.Println("- l: list all projects")
-	fmt.Println("- a: add a project")
-	fmt.Println("- u: update an existing project")
-	fmt.Println("- r: remove a project")
-	fmt.Println("- c: remove all projects")
-	fmt.Println("- h: show help")
-	fmt.Println("- q: quit")
 }
