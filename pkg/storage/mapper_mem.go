@@ -18,6 +18,18 @@ func (m *memMapper) List() (map[string]string, error) {
 	return m.projectMap, nil
 }
 
+func (m *memMapper) Get(name string) (string, error) {
+	if err := must(m); err != nil {
+		return "", err
+	}
+
+	if p, ok := m.projectMap[name]; ok {
+		return p, nil
+	}
+
+	return "", errNotFoundRecord
+}
+
 func (m *memMapper) Add(k, v string) error {
 	if err := must(m); err != nil {
 		return err

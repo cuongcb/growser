@@ -24,6 +24,7 @@ const (
 // Mapper provides the interface of db behavior
 type Mapper interface {
 	List() (map[string]string, error)
+	Get(string) (string, error)
 	Add(string, string) error
 	Update(string, string) error
 	Remove(string) error

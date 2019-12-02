@@ -40,6 +40,23 @@ func (m *fileMapper) List() (map[string]string, error) {
 	return list, nil
 }
 
+func (m *fileMapper) Get(name string) (string, error) {
+	if err := must(m); err != nil {
+		return "", err
+	}
+
+	if err := m.deserialize(); err != nil {
+		return "", err
+	}
+
+	projects := m.hub.GetProjects()
+	if p, ok := projects[name]; ok {
+		return p.GetPath(), nil
+	}
+
+	return "", errNotFoundRecord
+}
+
 func (m *fileMapper) Add(name, path string) error {
 	if err := must(m); err != nil {
 		return err

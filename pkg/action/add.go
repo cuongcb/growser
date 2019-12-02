@@ -1,6 +1,7 @@
 package action
 
 import (
+	"github.com/cuongcb/growser/pkg/service"
 	"github.com/urfave/cli"
 )
 
@@ -29,5 +30,5 @@ func addAction(ctx *cli.Context) error {
 	name := ctx.String("name")
 	path := ctx.String("path")
 
-	return nil
+	return service.AddProject(name, path)
 }
