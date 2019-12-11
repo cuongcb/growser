@@ -1,9 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"os"
 
+	"github.com/cuongcb/growser/pkg/action"
+	"github.com/cuongcb/growser/pkg/service"
 	"github.com/cuongcb/growser/pkg/storage"
 	"github.com/cuongcb/growser/pkg/view"
 
@@ -20,19 +21,17 @@ func initPresenter() (view.Presenter, error) {
 }
 
 func main() {
-	fmt.Println("growser starting...")
-
 	app := cli.NewApp()
+	app.Version = "1.0.0"
+	app.Commands = []cli.Command{
+		action.InitAction,
+		action.AddAction,
+		action.RemoveAction,
+		action.BrowseAction,
+		action.ListAction,
+	}
+
+	service.Init()
+
 	app.Run(os.Args)
-
-	m, err := initLoader()
-	if err != nil {
-		panic(err)
-	}
-
-	p, err := initPresenter()
-	if err != nil {
-		panic(err)
-	}
-
 }

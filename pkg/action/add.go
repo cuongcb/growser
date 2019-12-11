@@ -7,10 +7,11 @@ import (
 
 // AddAction provides the behavior for adding new project
 var AddAction = cli.Command{
-	Name:   "add",
-	Usage:  "save project info to db",
-	Flags:  addFlags,
-	Action: addAction,
+	Name:    "add",
+	Aliases: []string{"a"},
+	Usage:   "save project info to db",
+	Flags:   addFlags,
+	Action:  addAction,
 }
 
 var addFlags = []cli.Flag{

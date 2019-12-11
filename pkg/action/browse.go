@@ -7,10 +7,11 @@ import (
 
 // BrowseAction moves/open a new terminal to specific project's path
 var BrowseAction = cli.Command{
-	Name:   "browse",
-	Usage:  "go to project",
-	Flags:  browseFlags,
-	Action: browseAction,
+	Name:    "browse",
+	Aliases: []string{"br"},
+	Usage:   "go to project",
+	Flags:   browseFlags,
+	Action:  browseAction,
 }
 
 var browseFlags = []cli.Flag{

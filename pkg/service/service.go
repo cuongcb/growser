@@ -16,6 +16,19 @@ var client cliServices
 
 // Init initializes service
 func Init() error {
+	mapper, err := storage.NewMapper(&storage.Config{
+		Type: storage.File,
+	})
+	if err != nil {
+		return err
+	}
+
+	client = cliServices{
+		mapper,
+		browser.New(),
+		view.NewPresenter(),
+	}
+
 	return nil
 }
 

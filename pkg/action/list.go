@@ -7,10 +7,11 @@ import (
 
 // ListAction lists all saved projects
 var ListAction = cli.Command{
-	Name:   "list",
-	Usage:  "list all saved projects",
-	Flags:  listFlags,
-	Action: listAction,
+	Name:    "list",
+	Aliases: []string{"l"},
+	Usage:   "list all saved projects",
+	Flags:   listFlags,
+	Action:  listAction,
 }
 
 var listFlags = []cli.Flag{}
