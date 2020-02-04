@@ -3,6 +3,7 @@ package storage
 import (
 	"io/ioutil"
 	"os"
+	"path/filepath"
 
 	"github.com/cuongcb/growser/pkg/proto"
 	gproto "github.com/golang/protobuf/proto"
@@ -13,9 +14,22 @@ type fileMapper struct {
 	hub  *proto.Hub
 }
 
-func newFileMapper() *fileMapper {
+func newFileMapper(filePath string) *fileMapper {
+	dir := filepath.Dir(filePath)
+
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		if err := os.MkdirAll(dir, os.ModePerm); err != nil {
+			panic(err)
+		}
+
+		// create a file
+		if _, err := os.Create(filePath); err != nil {
+			panic(err)
+		}
+	}
+
 	return &fileMapper{
-		file: "./hub.db",
+		file: filePath,
 		hub: &proto.Hub{
 			Projects: make(map[string]*proto.Project),
 		},

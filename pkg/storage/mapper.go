@@ -32,18 +32,13 @@ type Mapper interface {
 	Info(string) (string, error)
 }
 
-// Config for storage at initialization-stage
-type Config struct {
-	Type Type
-}
-
 // NewMapper returns a new clean storage
-func NewMapper(cfg *Config) (Mapper, error) {
-	switch cfg.Type {
+func NewMapper(storage Type, dbPath string) (Mapper, error) {
+	switch storage {
 	case InMem:
 		return newMemMapper(), nil
 	case File:
-		return newFileMapper(), nil
+		return newFileMapper(dbPath), nil
 	default:
 		return nil, errNotSupported
 	}

@@ -2,35 +2,47 @@ package config
 
 import (
 	"os"
+	"path"
 
 	"github.com/cuongcb/growser/pkg/storage"
 )
 
 const (
 	defaultConfigDir string = ".growser"
-	defaultDBFile    string = "gr.db"
+	defaultDBFile    string = "db"
 )
 
 var defaultConfigPath string
 
 func init() {
-	if defaultConfigPath, err := os.UserHomeDir(); err != nil {
+	homePath, err := os.UserHomeDir()
+	if err != nil {
 		panic(err)
 	}
+
+	defaultConfigPath = homePath
 }
 
 // Config contains configurations for entire program
 type Config struct {
-	ConfigPath string
-	storage.Config
+	DBPath      string
+	StorageType storage.Type
 }
 
 // New returns a new configuration
-func New(cfgPath string, storageType storage.Type) Config {
-	path := cfgPath
-	if path == "" {
-		path = defaultConfigPath
-	}
+func New() *Config {
+	dbPath := path.Join(defaultConfigPath, defaultConfigDir, defaultDBFile)
+	return &Config{DBPath: dbPath}
+}
 
-	return Config{ConfigPath: path, storage.Config: storage.Config{storageType}}
+// WithDBPath stores path to db
+func (cfg *Config) WithDBPath(path string) *Config {
+	cfg.DBPath = path
+	return cfg
+}
+
+// WithStorage stores storage type
+func (cfg *Config) WithStorage(storage storage.Type) *Config {
+	cfg.StorageType = storage
+	return cfg
 }

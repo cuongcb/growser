@@ -4,24 +4,17 @@ import (
 	"os"
 
 	"github.com/cuongcb/growser/pkg/action"
+	"github.com/cuongcb/growser/pkg/config"
+	"github.com/cuongcb/growser/pkg/log"
 	"github.com/cuongcb/growser/pkg/service"
 	"github.com/cuongcb/growser/pkg/storage"
-	"github.com/cuongcb/growser/pkg/view"
 
 	"github.com/urfave/cli"
 )
 
-func initLoader() (storage.Mapper, error) {
-	cfg := &storage.Config{Type: storage.File}
-	return storage.NewMapper(cfg)
-}
-
-func initPresenter() (view.Presenter, error) {
-	return view.NewPresenter(), nil
-}
-
 func main() {
 	app := cli.NewApp()
+	app.Usage = "An application browses workspace in golang"
 	app.Version = "1.0.0"
 	app.Commands = []cli.Command{
 		action.InitAction,
@@ -31,7 +24,9 @@ func main() {
 		action.ListAction,
 	}
 
-	service.Init()
+	log.SetLogLevel(log.ERROR)
+	cfg := config.New().WithStorage(storage.File)
+	service.Init(cfg)
 
 	app.Run(os.Args)
 }
