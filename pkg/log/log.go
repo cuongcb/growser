@@ -43,41 +43,33 @@ func SetLogLevel(level Level) {
 
 // Info ...
 func Info(f string, msg ...interface{}) {
-	if logLevel < INFO {
-		return
-	}
-
-	log(format(f), message(INFO, msg...)...)
+	log(INFO, f, msg...)
 }
 
 // Debug ...
 func Debug(f string, msg ...interface{}) {
-	if logLevel < DEBUG {
-		return
-	}
-
-	log(format(f), message(DEBUG, msg...)...)
+	log(DEBUG, f, msg...)
 }
 
 // Warn ...
 func Warn(f string, msg ...interface{}) {
-	if logLevel < WARN {
-		return
-	}
-
-	log(format(f), message(WARN, msg...)...)
+	log(WARN, f, msg...)
 }
 
 // Error ...
 func Error(f string, msg ...interface{}) {
-	if logLevel < ERROR {
+	log(ERROR, f, msg...)
+}
+
+func log(l Level, f string, msg ...interface{}) {
+	if logLevel < l {
 		return
 	}
 
-	log(format(f), message(ERROR, msg...)...)
+	internalLog(format(f), message(l, msg...)...)
 }
 
-func log(f string, msg ...interface{}) {
+func internalLog(f string, msg ...interface{}) {
 	fmt.Printf(f, msg...)
 }
 
